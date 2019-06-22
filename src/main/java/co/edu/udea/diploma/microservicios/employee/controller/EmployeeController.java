@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.udea.diploma.microservicios.employee.model.Employee;
-import co.edu.udea.diploma.microservicios.employee.repository.EmployeeRepository;
+import co.edu.udea.diploma.microservicios.employee.repository.EmployeeCRUDRepository;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -21,16 +21,22 @@ import lombok.extern.slf4j.Slf4j;
 public class EmployeeController {
 
 	@Autowired
-	EmployeeRepository repository;
+	EmployeeCRUDRepository repository;
 
 	@PostMapping("/")
 	public ResponseEntity<Employee> add(@RequestBody Employee employee) {
 		log.info("Adding employee: {}", employee);
-		return ResponseEntity.ok(repository.add(employee));
+		return ResponseEntity.ok(repository.save(employee));
+	}
+
+	@GetMapping("/{id}")
+	public Employee findById(@PathVariable("id") String id) {
+		log.info("Employee find: id = {}", id);
+		return repository.findById(id).get();
 	}
 
 	@GetMapping("/")
-	public ResponseEntity<List<Employee>> findAll() {
+	public ResponseEntity<Iterable<Employee>> findAll() {
 		log.info("Getting all employees");
 		return ResponseEntity.ok(repository.findAll());
 	}
@@ -38,12 +44,12 @@ public class EmployeeController {
 	@GetMapping("/department/{departmentId}")
 	public ResponseEntity<List<Employee>> findByDepartment(@PathVariable("departmentId") Long departmentId) {
 		log.info("Finding by department {}", departmentId);
-		return ResponseEntity.ok(repository.findByDepartment(departmentId));
+		return ResponseEntity.ok(repository.findByDepartmentId(departmentId));
 	}
 
 	@GetMapping("/organization/{organizationId}")
 	public ResponseEntity<List<Employee>> findByOrganization(@PathVariable("organizationId") Long organizationId) {
 		log.info("Finding by organization {}", organizationId);
-		return ResponseEntity.ok(repository.findByOrganization(organizationId));
+		return ResponseEntity.ok(repository.findByOrganizationId(organizationId));
 	}
 }
